@@ -1,6 +1,6 @@
 @echo off
 
-if not exist "%Factory%\target\%WB_PROJECT%\WIMBUILD" exit 1
+if not exist "%Factory%\target\%WB_PROJECT%\build\boot.wim" exit 1
 set "WB_ROOT=%APP_ROOT%"
 
 if "x%_WB_EXEC_MODE%"=="x1" (
@@ -100,4 +100,5 @@ goto :EOF
 :ON_ERROR
 if "x%_WB_EXEC_MODE%"=="x1" goto :EOF
 pause
+
 
