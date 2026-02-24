@@ -87,7 +87,7 @@ set BUILD_
 echo.
 
 set "_WB_BASE_WIM=%WB_BASE%"
-if /i not "%WB_BASE%"=="winre.wim" goto :PHRASE_GETINFO
+if /i "%WB_BASE%"=="boot.wim" goto :PHRASE_GETINFO2
 
 rem extract winre.wim from install.wim
 if "x%WB_SRC%"=="x" (
@@ -104,12 +104,27 @@ if not exist "%_WB_PE_WIM%" (
 set _WB_BASE_EXTRACTED=1
 set "_WB_BASE_WIM=%WB_BASE_PATH%"
 
-:PHRASE_GETINFO
+:PHRASE_GETINFO1
+call :cecho PHRASE "PHRASE:Get WIM image INFO"
+for /f "tokens=1,2 delims=:(" %%i in ('DismX /Get-WimInfo /WimFile:"%WB_SRC_FOLDER%\sources\boot.wim" /Index:1 /English') do (
+  if "%%i"=="Architecture " set WB_OTHER_ARCH=%%j
+  if "%%i"=="Version " set WB_OTHER_VER[1][2][3]=%%j
+  if "%%i"=="ServicePack Build " set WB_OTHER_VER[]4=%%j
+)
+set "WB_OTHER_ARCH=%WB_OTHER_ARCH: =%"
+set "WB_OTHER_VER[1][2][3]=%WB_OTHER_VER[1][2][3]: =%"
+set "WB_OTHER_VER[4]=%WB_OTHER_VER[4]: =%"
+md %Factory%\target\%WB_PROJECT%\WIMBUILD\%WB_OTHER_ARCH%-%WB_OTHER_VER[1][2][3]%.%WB_OTHER_VER[4]%
+set WB_OTHER_
+echo.
+call :PHRASE_GETINFO2
+
+:PHRASE_GETINFO2
 call :cecho PHRASE "PHRASE:Get WIM image INFO"
 for /f "tokens=1,2 delims=:(" %%i in ('DismX /Get-WimInfo /WimFile:"%_WB_BASE_WIM%" /Index:%WB_BASE_INDEX% /English') do (
   if "%%i"=="Architecture " set WB_PE_ARCH=%%j
-  if "%%i"=="Version " set WB_PE_VER=%%j
-  if "%%i"=="ServicePack Build " set WB_PE_BUILD=%%j
+  if "%%i"=="Version " set WB_PE_VER[1][2][3]=%%j
+  if "%%i"=="ServicePack Build " set WB_PE_VER[4]=%%j
   if "x!LANG_FLAG!"=="x1" (
     set WB_PE_LANG=%%i
     set LANG_FLAG=
@@ -123,12 +138,12 @@ if "x%WB_PE_LANG%"=="x" (
 )
 
 set "WB_PE_ARCH=%WB_PE_ARCH: =%"
-set "WB_PE_VER=%WB_PE_VER: =%"
-set "WB_PE_BUILD=%WB_PE_BUILD: =%"
+set "WB_PE_VER[1][2][3]=%WB_PE_VER[1][2][3]: =%"
+set "WB_PE_VER[4]=%WB_PE_VER[4]: =%"
 rem here is TAB, not SPACE 
 set "WB_PE_LANG=%WB_PE_LANG:	=%"
 set "WB_PE_LANG=%WB_PE_LANG: =%"
-
+md %Factory%\target\%WB_PROJECT%\WIMBUILD\%WB_PE_ARCH%-%WB_PE_VER[1][2][3]%.%WB_PE_VER[4]%
 set WB_PE_
 echo.
 
@@ -344,3 +359,4 @@ if "x%1"=="x0" (
 )
 pause
 exit 1
+
