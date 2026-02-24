@@ -1,6 +1,7 @@
 @echo off
 
- set "WB_ROOT=%APP_ROOT%"
+if not exist "%Factory%\target\%WB_PROJECT%\WIMBUILD" exit 1
+set "WB_ROOT=%APP_ROOT%"
 
 if "x%_WB_EXEC_MODE%"=="x1" (
   title WimBuilder^(%~nx0^) - Don't Close this console window while building
@@ -99,3 +100,4 @@ goto :EOF
 :ON_ERROR
 if "x%_WB_EXEC_MODE%"=="x1" goto :EOF
 pause
+
